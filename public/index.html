@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wolvereats Website</title>
+    <style>
+        /* Set the background image */
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('WOLVEREATS SQUAD.png') no-repeat center center fixed;
+            background-size: contain; /* Ensures the image fits within the viewport */
+            background-repeat: no-repeat;
+            background-color: black; /* Default background color */
+            overflow: hidden;
+        }
+
+        /* Style for the floating text box */
+        #floatingBox {
+            position: absolute;
+            width: 350px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            cursor: pointer; /* Change cursor to indicate interactivity */
+        }
+
+        /* Style for the link */
+        #floatingBox a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #floatingBox a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating text box -->
+    <div id="floatingBox">
+        Welcome friends and family to the official Wolvereats Website!<br><br>
+        Please click this link to check out our Instagram!<br>
+        <a href="https://www.instagram.com/wolver.eats/" target="_blank">Wolvereats Instagram</a>
+    </div>
+
+    <!-- JavaScript for animation -->
+    <script>
+        const box = document.getElementById('floatingBox');
+        let posX = Math.random() * (window.innerWidth - box.offsetWidth);
+        let posY = Math.random() * (window.innerHeight - box.offsetHeight);
+        let velocityX = 2;
+        let velocityY = 2;
+        let paused = false; // Variable to track if animation is paused
+        let collisionCount = 0; // Count the number of wall collisions
+        let flashing = false; // Flag to prevent multiple flashing events
+
+        // Function to animate the box
+        function animate() {
+            if (!paused) {
+                posX += velocityX;
+                posY += velocityY;
+
+                // Reverse direction upon hitting window edges
+                if (posX + box.offsetWidth >= window.innerWidth || posX <= 0) {
+                    velocityX = -velocityX;
+                    collisionCount++;
+                }
+                if (posY + box.offsetHeight >= window.innerHeight || posY <= 0) {
+                    velocityY = -velocityY;
+                    collisionCount++;
+                }
+
+                // Check if collision count reaches 10
+                if (collisionCount >= 10) {
+                    collisionCount = 0; // Reset collision count
+                    moveToCorner(); // Move the box to a corner
+                }
+
+                // Update the position of the box
+                box.style.left = posX + 'px';
+                box.style.top = posY + 'px';
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Function to move the box to a corner
+        function moveToCorner() {
+            // Randomly select a corner
+            const corners = [
+                { x: 0, y: 0 }, // Top-left
+                { x: window.innerWidth - box.offsetWidth, y: 0 }, // Top-right
+                { x: 0, y: window.innerHeight - box.offsetHeight }, // Bottom-left
+                { x: window.innerWidth - box.offsetWidth, y: window.innerHeight - box.offsetHeight } // Bottom-right
+            ];
+            const corner = corners[Math.floor(Math.random() * corners.length)];
+
+            // Move the box to the selected corner
+            posX = corner.x;
+            posY = corner.y;
+
+            // Reverse velocities to keep the box moving after hitting the corner
+            velocityX = velocityX >= 0 ? 2 : -2;
+            velocityY = velocityY >= 0 ? 2 : -2;
+
+            // Trigger the flashing background
+            if (!flashing) {
+                flashing = true;
+                flashBackground();
+            }
+        }
+
+        // Function to flash the background
+        function flashBackground() {
+            const body = document.body;
+            let flashCount = 0;
+            const flashDuration = 3000; // Total flash duration in milliseconds
+            const flashInterval = 500; // Interval between flashes
+            const maxFlashes = flashDuration / flashInterval;
+            const originalBackgroundColor = getComputedStyle(body).backgroundColor;
+
+            const flash = setInterval(() => {
+                if (flashCount >= maxFlashes) {
+                    clearInterval(flash);
+                    body.style.backgroundColor = originalBackgroundColor;
+                    flashing = false;
+                    return;
+                }
+
+                // Alternate between red and black
+                if (flashCount % 2 === 0) {
+                    body.style.backgroundColor = 'red';
+                } else {
+                    body.style.backgroundColor = 'black';
+                }
+
+                flashCount++;
+            }, flashInterval);
+        }
+
+        // Event listeners to pause and resume animation on hover
+        box.addEventListener('mouseenter', () => {
+            paused = true;
+        });
+
+        box.addEventListener('mouseleave', () => {
+            paused = false;
+        });
+
+        // Start the animation
+        animate();
+    </script>
+
+</body>
+</html>
